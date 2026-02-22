@@ -1,7 +1,7 @@
 use poise::Command;
 use serenity::all::EventHandler;
 
-// TODO: standardized permission checks
+// TODO: standardized permission checks 
 // Implement permission checks for commands so modules don't have to check them manually.
 // Could maybe contain some logic so modules can specify what kind of permission checks to use.
 pub struct Component {
