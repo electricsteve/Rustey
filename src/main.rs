@@ -58,6 +58,7 @@ async fn main() {
 
     // Create a new instance of the Client, logging in as a bot.
     // TODO: event handler proxy
+    // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/3
     // Only 1 event handler can be registered in new serenity, so make a "proxy" event handler
     let mut client_builder = serenity::Client::builder(token, intents).framework(Box::new(framework)).event_handler(Arc::new(Handler));
     for event_handler in event_handlers {
