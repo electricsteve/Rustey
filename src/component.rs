@@ -1,12 +1,13 @@
 use std::sync::Arc;
 use poise::Command;
-use serenity::all::EventHandler;
+use poise::serenity_prelude::EventHandler;
 
 // TODO: standardized permission checks
 // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/1
 // Implement permission checks for commands so modules don't have to check them manually.
 // Could maybe contain some logic so modules can specify what kind of permission checks to use.
 pub struct Component {
+    #[allow(dead_code)]
     pub id: String,
     /// List of commands to register with the bot.
     /// Some checks should be manually done, such as permission checks,
