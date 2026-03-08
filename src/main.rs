@@ -1,6 +1,7 @@
 mod components;
 mod component;
 
+use std::collections::HashMap;
 use poise::{BoxFuture, Command, PrefixFrameworkOptions, serenity_prelude::{self as serenity}};
 use serenity::all::FullEvent;
 use std::sync::{Arc, Mutex};
@@ -29,6 +30,7 @@ struct Data {
     // Turn individual components on and off at runtime.
     components: Vec<component::Component>,
     enabled_components: Mutex<Vec<String>>,
+    todo_map: Mutex<HashMap<serenity::UserId, Vec<String>>>
     // TODO: database
     // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/5
     // A database components and use to store data.
@@ -42,7 +44,7 @@ struct CommandData {
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-#[poise::command(prefix_command, owners_only)]
+#[poise::command(prefix_command, owners_only, custom_data = "CommandData { component_id: \"core\".to_string() }")]
 async fn register_commands(ctx: Context<'_>) -> Result<(), Error> {
     let commands = &ctx.framework().options().commands;
     poise::builtins::register_globally(ctx.http(), commands).await?;
@@ -111,6 +113,7 @@ async fn main() {
     let data = Data {
         enabled_components: Mutex::new(components.iter().map(|c| c.id.clone()).collect()),
         components,
+        todo_map: Mutex::new(HashMap::new()),
     };
     data.enabled_components.lock().unwrap().push("core".to_string());
     let client_builder = serenity::Client::builder(token, intents).framework(Box::new(framework)).event_handler(Arc::new(Handler)).data(Arc::new(data));
