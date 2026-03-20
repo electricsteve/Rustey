@@ -1,3 +1,6 @@
+mod database;
+mod constants;
+
 use crate::component::Component;
 use crate::{Context, Error};
 use poise::serenity_prelude as serenity;
@@ -6,7 +9,7 @@ use std::sync::Arc;
 
 pub fn component() -> Box<Component> {
     Box::new(Component {
-        id: "todo".to_string(),
+        id: constants::COMPONENT_ID.to_string(),
         commands: vec![todo],
         event_handler: Arc::new(Handler)
     })
