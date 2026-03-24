@@ -17,6 +17,16 @@ pub async fn add_todo(user: poise::serenity_prelude::UserId, content: String, db
     let _todo: Option<Todo> = db.upsert(("todo", uid as i64)).patch(PatchOp::add("/list", [content])).await.expect("Error adding to-do item");
 }
 
+pub async fn get_todo_list(user: poise::serenity_prelude::UserId, db: &Surreal<Db>) -> Vec<String> {
+    let uid = user.get();
+    let todo: Option<Todo> = db.select(("todo", uid as i64)).await.expect("Error fetching to-do list");
+    if let Some(todo) = todo {
+        todo.list
+    } else {
+        Vec::new()
+    }
+}
+
 #[derive(SurrealValue)]
 struct Todo {
     list: Vec<String>,

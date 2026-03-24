@@ -40,15 +40,7 @@ impl serenity::EventHandler for Handler {
 async fn list(ctx: Context<'_>) -> Result<(), Error> {
     let user_id = ctx.author().id;
     let data = ctx.data();
-    let todo_list = {
-        let hash_map = data.todo_map.lock().unwrap();
-        let list = hash_map.get(&user_id);
-        if let Some(list) = list {
-            list.clone()
-        } else {
-            Vec::new()
-        }
-    };
+    let todo_list = database::get_todo_list(user_id, &data.database).await;
     if todo_list.is_empty() {
         ctx.say("There is currently nothing on your to-do list.").await?;
     } else {
@@ -67,11 +59,6 @@ pub async fn todo(_: Context<'_>) -> Result<(), Error> {
 pub async fn add(ctx: Context<'_>, content: String) -> Result<(), Error> {
     let user_id = ctx.author().id;
     let data = ctx.data();
-    {
-        let mut hash_map = data.todo_map.lock().unwrap();
-        let todo_list = hash_map.entry(user_id).or_default();
-        todo_list.push(content.clone());
-    }
     database::add_todo(user_id, content.clone(), &data.database).await;
     ctx.say(format!("Successfully added `{content}` to your to-do list!")).await?;
     Ok(())
