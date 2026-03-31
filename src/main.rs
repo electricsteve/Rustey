@@ -90,7 +90,6 @@ fn get_framework(commands: Vec<Command<GlobalData, Error>>) -> poise::Framework<
         .build()
 }
 
-
 async fn get_database(path: String) -> Surreal<Db> {
     Surreal::new::<SurrealKv>(path).await.expect("Failed to initialize database")
 }

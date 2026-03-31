@@ -2,6 +2,7 @@ use crate::component::Component;
 use std::sync::Mutex;
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
+use surrealdb::types::SurrealValue;
 use crate::component;
 
 pub struct GlobalData {
@@ -14,6 +15,11 @@ pub struct GlobalData {
     pub database: Surreal<Db>,
 }
 
+#[derive(SurrealValue, Default)]
+pub struct ComponentData {
+    pub id: String,
+    pub enabled: bool,
+}
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, GlobalData, Error>;
