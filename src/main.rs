@@ -3,6 +3,7 @@ mod component;
 mod core;
 pub mod utils;
 pub mod types;
+pub mod init;
 
 use crate::component::Component;
 use poise::{serenity_prelude::self as serenity, Command, PrefixFrameworkOptions};
@@ -30,7 +31,7 @@ async fn main() {
     // Setup components & commands
     let components = components::get_components();
     let mut commands : Vec<Command<GlobalData, Error>> = Vec::new();
-    core::custom_data(&components, &mut commands);
+    init::get_commands(&components, &mut commands);
     commands.append(&mut core::commands());
 
     // Setup framework
@@ -41,7 +42,15 @@ async fn main() {
 
     // Run component initialisers. Collect first to avoid borrowing `data` both immutably and mutably.
     let initializers: Vec<(String, component::Initializer)> = data.get_initializers();
+    let core_initializers: Vec<component::Initializer> = vec![core::database::migrate];
 
+    for initializer in core_initializers {
+        if let Err(why) = initializer(&mut data).await {
+            println!("Error initializing core component: {why:?}");
+            println!("The bot will now exit");
+            return;
+        }
+    }
     for (component_id, initializer) in initializers {
         if let Err(why) = initializer(&mut data).await {
             println!("Error initializing component {}: {why:?}", component_id);
@@ -51,7 +60,7 @@ async fn main() {
     // Build client
     let client_builder = serenity::Client::builder(token, intents)
         .framework(Box::new(framework))
-        .event_handler(Arc::new(core::MainEventHandler))
+        .event_handler(Arc::new(core::events::MainEventHandler))
         .data(Arc::new(data));
     let mut client =
         client_builder.await.expect("Error creating client");
@@ -70,7 +79,6 @@ fn get_environment() -> (serenity::Token, String) {
 
 fn get_data(db: Surreal<Db>, components: Vec<Component>) -> GlobalData {
     GlobalData {
-        enabled_components: Mutex::new(components.iter().map(|c| c.id.clone()).collect()),
         components,
         database: db,
     }

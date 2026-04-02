@@ -1,24 +1,18 @@
+use std::fmt;
+use std::fmt::Formatter;
+use crate::component;
 use crate::component::Component;
-use std::sync::Mutex;
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
 use surrealdb::types::SurrealValue;
-use crate::component;
 
 pub struct GlobalData {
     // TODO: component management
     // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/6
     // Turn individual components on and off at runtime.
     pub components: Vec<Component>,
-    pub enabled_components: Mutex<Vec<String>>,
     #[allow(dead_code)]
     pub database: Surreal<Db>,
-}
-
-#[derive(SurrealValue, Default)]
-pub struct ComponentData {
-    pub id: String,
-    pub enabled: bool,
 }
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -33,3 +27,20 @@ impl GlobalData {
             .collect()
     }
 }
+
+#[derive(Debug)]
+pub enum ErrorType {
+    IllegalArgument(String),
+    NotFound(String),
+}
+
+impl fmt::Display for ErrorType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            ErrorType::IllegalArgument(msg) => write!(f, "Illegal argument: {msg}"),
+            ErrorType::NotFound(msg) => write!(f, "Not found: {msg}"),
+        }
+    }
+}
+
+impl std::error::Error for ErrorType {}
