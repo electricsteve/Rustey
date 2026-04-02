@@ -8,7 +8,7 @@ pub mod init;
 use crate::component::Component;
 use poise::{serenity_prelude::self as serenity, Command, PrefixFrameworkOptions};
 use std::env;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use surrealdb::engine::local::{Db, SurrealKv};
 use surrealdb::Surreal;
 

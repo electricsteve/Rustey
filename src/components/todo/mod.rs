@@ -1,7 +1,6 @@
 mod database;
 mod constants;
 
-use std::mem::replace;
 use crate::component::InitializerFuture;
 use crate::component::Component;
 use crate::{Context, Error};

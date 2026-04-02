@@ -1,4 +1,3 @@
-use std::fmt::{Display, Formatter};
 use crate::component::{Component, InitializerFuture};
 use surrealdb::types::{RecordId, SurrealValue};
 
@@ -14,7 +13,7 @@ DEFINE FIELD IF NOT EXISTS enabled ON TABLE {COMPONENT_DATA_TABLE} TYPE bool;
         // Add rows for all components
         for component in data.components.iter() {
             let data_in_db: Option<ComponentData> = data.database.select(ComponentData::id_from_component(component)).await?;
-            if let None = data_in_db { // Workaround for no IGNORE on `.insert().content()`
+            if data_in_db.is_none() { // Workaround for no IGNORE on `.insert().content()`
                 let component_data = ComponentData::from_component(component);
                 let _: Option<ComponentData> = data.database.insert(component_data.id.clone()).content(component_data).await?;
             }

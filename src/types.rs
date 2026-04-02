@@ -1,10 +1,9 @@
-use std::fmt;
-use std::fmt::Formatter;
 use crate::component;
 use crate::component::Component;
+use std::fmt;
+use std::fmt::Formatter;
 use surrealdb::engine::local::Db;
 use surrealdb::Surreal;
-use surrealdb::types::SurrealValue;
 
 pub struct GlobalData {
     // TODO: component management
