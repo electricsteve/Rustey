@@ -88,6 +88,7 @@ pub fn command_check(
             None => {
                 // TODO: add tracing
                 // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/7
+                // Also add some nice logging for when components load, etc.
                 // tracing::warn!("Command custom data is not of type CommandData");
                 ctx.say("An error occurred while checking command component!").await?;
                 return Ok(true); // Currently runs if it can't get the component id, this may change
