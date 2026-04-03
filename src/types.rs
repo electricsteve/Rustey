@@ -6,9 +6,6 @@ use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
 
 pub struct GlobalData {
-    // TODO: component management
-    // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/6
-    // Turn individual components on and off at runtime.
     pub components: Vec<Component>,
     #[allow(dead_code)]
     pub database: Surreal<Db>,
