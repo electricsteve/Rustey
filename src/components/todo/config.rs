@@ -1,8 +1,8 @@
-use surrealdb::engine::local::Db;
-use surrealdb::Surreal;
-use surrealdb::types::SurrealValue;
-use crate::core::database::get_component_config;
 use super::constants::COMPONENT_ID;
+use crate::core::database::get_component_config;
+use surrealdb::Surreal;
+use surrealdb::engine::local::Db;
+use surrealdb::types::SurrealValue;
 
 #[derive(SurrealValue)]
 struct TodoConfig {
