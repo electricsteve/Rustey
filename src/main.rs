@@ -12,7 +12,7 @@ use std::sync::Arc;
 use surrealdb::Surreal;
 use surrealdb::engine::local::{Db, SurrealKv};
 
-pub use types::{Context, Error, GlobalData, ErrorType};
+pub use types::{Context, Error, ErrorType, GlobalData};
 
 // TODO: global config through env and/or config file
 // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/8

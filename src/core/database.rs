@@ -1,6 +1,6 @@
-use surrealdb::engine::local::Db;
-use surrealdb::Surreal;
 use crate::component::{Component, InitializerFuture};
+use surrealdb::Surreal;
+use surrealdb::engine::local::Db;
 use surrealdb::types::{RecordId, SurrealNone, SurrealValue};
 
 const COMPONENT_DATA_TABLE: &str = "component_data";
@@ -32,8 +32,12 @@ DEFINE FIELD IF NOT EXISTS config ON TABLE {COMPONENT_DATA_TABLE} TYPE object FL
     })
 }
 
-pub async fn get_component_config<T: SurrealValue>(id: String, db: &Surreal<Db>) -> Result<T, crate::Error> {
-    let component_config: Option<ComponentConfig<T>> = db.select(ComponentData::id_from_component_string(id.as_str())).await?;
+pub async fn get_component_config<T: SurrealValue>(
+    id: String,
+    db: &Surreal<Db>,
+) -> Result<T, crate::Error> {
+    let component_config: Option<ComponentConfig<T>> =
+        db.select(ComponentData::id_from_component_string(id.as_str())).await?;
     if let Some(data) = component_config {
         Ok(data.config)
     } else {
@@ -41,9 +45,16 @@ pub async fn get_component_config<T: SurrealValue>(id: String, db: &Surreal<Db>)
     }
 }
 
-pub async fn set_component_config<T: SurrealValue>(id: String, config: T, db: &Surreal<Db>) -> Result<(), crate::Error> {
+pub async fn set_component_config<T: SurrealValue>(
+    id: String,
+    config: T,
+    db: &Surreal<Db>,
+) -> Result<(), crate::Error> {
     let component_config: ComponentConfig<T> = ComponentConfig { config };
-    let _: Option<ComponentConfig<T>> = db.update(ComponentData::id_from_component_string(id.as_str())).content(component_config).await?;
+    let _: Option<ComponentConfig<T>> = db
+        .update(ComponentData::id_from_component_string(id.as_str()))
+        .content(component_config)
+        .await?;
     Ok(())
 }
 
@@ -52,7 +63,7 @@ pub async fn set_component_config<T: SurrealValue>(id: String, config: T, db: &S
 #[derive(SurrealValue)]
 pub struct ComponentData {
     pub id: RecordId,
-    pub enabled: bool
+    pub enabled: bool,
 }
 
 #[derive(SurrealValue)]
