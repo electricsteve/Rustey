@@ -6,7 +6,6 @@ use crate::core::database::{ComponentData, Enabled};
 use crate::types::ErrorType::{IllegalArgument, NotFound};
 use crate::{Error, GlobalData};
 use poise::{BoxFuture, Command};
-use surrealdb::types::SurrealNone;
 
 pub fn commands() -> Vec<Command<GlobalData, Error>> {
     vec![commands::register_commands(), commands::toggle_component()]
