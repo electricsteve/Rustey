@@ -13,7 +13,7 @@ use std::sync::Arc;
 pub fn component() -> Box<Component> {
     Box::new(Component {
         id: constants::COMPONENT_ID.to_string(),
-        commands: vec![todo],
+        commands: vec![todo, config::config],
         event_handler: Arc::new(Handler),
         initializer: Some(|data| Box::pin(initializer(data))),
     })

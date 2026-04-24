@@ -1,7 +1,10 @@
-use std::sync::OnceLock;
-
 use super::constants::COMPONENT_ID;
 use crate::core::database::{get_component_config, set_component_config};
+use poise::CreateReply;
+use poise::serenity_prelude as serenity;
+use poise::serenity_prelude::CollectComponentInteractions;
+use std::sync::OnceLock;
+use std::time::Duration;
 use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
 use surrealdb::types::SurrealValue;
@@ -12,7 +15,7 @@ static SETTINGS: OnceLock<RwLock<TodoConfig>> = OnceLock::new();
 #[derive(SurrealValue, Clone, Default, Debug, PartialEq)]
 pub struct TodoConfig {
     #[surreal(default)]
-    pub testing: bool,
+    pub show_count: bool,
 }
 
 async fn ensure_loaded(db: &Surreal<Db>) -> Result<(), crate::Error> {
@@ -40,5 +43,43 @@ pub async fn update_config(db: &Surreal<Db>, new_cfg: TodoConfig) -> Result<(), 
     })?;
     let mut cfg = lock.write().await;
     *cfg = new_cfg;
+    Ok(())
+}
+
+#[poise::command(prefix_command, slash_command)]
+pub async fn config(ctx: crate::Context<'_>) -> Result<(), crate::Error> {
+    let data = ctx.data();
+    let cfg = get_config(&data.database).await?;
+    let show_count_str = if cfg.show_count { "Yes" } else { "No" };
+    let text = format!("Current configuration:\n- Show item count: {}", show_count_str);
+    let button = serenity::CreateButton::new("show_count").label("Toggle \"Show item count\"");
+    let buttons = [button];
+    let action_row = serenity::CreateActionRow::buttons(&buttons);
+    let component = serenity::CreateComponent::ActionRow(action_row);
+    let message = CreateReply::new().content(text).components(vec![component]);
+    let reply_handle = ctx.send(message).await?;
+    let interaction = match reply_handle
+        .message()
+        .await?
+        .id
+        .collect_component_interactions(ctx.serenity_context())
+        .timeout(Duration::from_secs(60 * 3))
+        .await
+    {
+        Ok(interaction) => interaction,
+        None => {
+            return Ok(());
+        },
+    };
+    let response = match &interaction.data.custom_id {
+        "show_count" => {
+            let new_cfg = TodoConfig { show_count: !cfg.show_count };
+            update_config(&data.database, new_cfg.clone()).await?;
+            let show_count_str = if new_cfg.show_count { "Yes" } else { "No" };
+            format!("Updated configuration:\n- Show item count: {}", show_count_str)
+        },
+        _ => panic!("unexpected interaction custom id"),
+    };
+    reply_handle.message().reply(ctx, response).await.unwrap();
     Ok(())
 }
