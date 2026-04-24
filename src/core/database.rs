@@ -33,11 +33,11 @@ DEFINE FIELD IF NOT EXISTS config ON TABLE {COMPONENT_DATA_TABLE} TYPE object FL
 }
 
 pub async fn get_component_config<T: SurrealValue>(
-    id: String,
+    id: &str,
     db: &Surreal<Db>,
 ) -> Result<T, crate::Error> {
     let component_config: Option<ComponentConfig<T>> =
-        db.select(ComponentData::id_from_component_string(id.as_str())).await?;
+        db.select(ComponentData::id_from_component_string(id)).await?;
     if let Some(data) = component_config {
         Ok(data.config)
     } else {
@@ -46,15 +46,13 @@ pub async fn get_component_config<T: SurrealValue>(
 }
 
 pub async fn set_component_config<T: SurrealValue>(
-    id: String,
+    id: &str,
     config: T,
     db: &Surreal<Db>,
 ) -> Result<(), crate::Error> {
     let component_config: ComponentConfig<T> = ComponentConfig { config };
-    let _: Option<ComponentConfig<T>> = db
-        .update(ComponentData::id_from_component_string(id.as_str()))
-        .merge(component_config)
-        .await?;
+    let _: Option<ComponentConfig<T>> =
+        db.update(ComponentData::id_from_component_string(id)).merge(component_config).await?;
     Ok(())
 }
 

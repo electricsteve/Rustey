@@ -35,7 +35,7 @@ impl GlobalData {
         let _: Option<ComponentData> = self
             .database
             .update(ComponentData::id_from_component_string(&component_id))
-            .content(Enabled { enabled: true })
+            .merge(Enabled { enabled: true })
             .await?;
         Ok(())
     }
@@ -50,7 +50,7 @@ impl GlobalData {
         let _: Option<ComponentData> = self
             .database
             .update(ComponentData::id_from_component_string(&component_id))
-            .content(Enabled { enabled: false })
+            .merge(Enabled { enabled: false })
             .await?;
         Ok(())
     }
