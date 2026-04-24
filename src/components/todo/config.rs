@@ -2,7 +2,7 @@ use super::constants::COMPONENT_ID;
 use crate::core::database::{get_component_config, set_component_config};
 use poise::CreateReply;
 use poise::serenity_prelude as serenity;
-use poise::serenity_prelude::CollectComponentInteractions;
+use poise::serenity_prelude::{CollectComponentInteractions, CreateInteractionResponse};
 use std::sync::OnceLock;
 use std::time::Duration;
 use surrealdb::Surreal;
@@ -66,13 +66,13 @@ pub async fn config(ctx: crate::Context<'_>) -> Result<(), crate::Error> {
         .timeout(Duration::from_secs(60 * 3))
         .await
     {
-        Ok(interaction) => interaction,
+        Some(interaction) => interaction,
         None => {
             return Ok(());
         },
     };
-    let response = match &interaction.data.custom_id {
-        "show_count" => {
+    let response = match &interaction.data.custom_id.as_str() {
+        &"show_count" => {
             let new_cfg = TodoConfig { show_count: !cfg.show_count };
             update_config(&data.database, new_cfg.clone()).await?;
             let show_count_str = if new_cfg.show_count { "Yes" } else { "No" };
@@ -80,6 +80,7 @@ pub async fn config(ctx: crate::Context<'_>) -> Result<(), crate::Error> {
         },
         _ => panic!("unexpected interaction custom id"),
     };
-    reply_handle.message().reply(ctx, response).await.unwrap();
+    reply_handle.edit(ctx, CreateReply::new().content(response)).await?;
+    interaction.create_response(ctx.as_ref(), CreateInteractionResponse::Acknowledge).await?;
     Ok(())
 }

@@ -5,6 +5,6 @@ edition = "2024"
 
 [dependencies]
 dotenv = "0.15.0"
-poise = { git = "https://github.com/serenity-rs/poise.git", rev = "8807088ee077f81c2b88d54d065b82b4c7dce28d" }
+poise = { git = "https://github.com/serenity-rs/poise.git", branch = "serenity-next" }
 surrealdb = { version = "3.0.5", features = ["kv-mem", "protocol-ws", "kv-surrealkv"] }
 tokio = { version = "1.50.0", features = ["macros", "rt-multi-thread"] }
