@@ -1,7 +1,7 @@
 use crate::component::{Component, InitializerFuture};
 use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
-use surrealdb::types::{RecordId, SurrealNone, SurrealValue};
+use surrealdb::types::{RecordId, SurrealValue};
 
 const COMPONENT_DATA_TABLE: &str = "component_data";
 
@@ -53,7 +53,7 @@ pub async fn set_component_config<T: SurrealValue>(
     let component_config: ComponentConfig<T> = ComponentConfig { config };
     let _: Option<ComponentConfig<T>> = db
         .update(ComponentData::id_from_component_string(id.as_str()))
-        .content(component_config)
+        .merge(component_config)
         .await?;
     Ok(())
 }

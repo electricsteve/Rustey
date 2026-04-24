@@ -4,14 +4,15 @@ use super::constants::COMPONENT_ID;
 use crate::core::database::{get_component_config, set_component_config};
 use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
-use surrealdb::types::SurrealValue;
+use surrealdb::types::{SurrealValue, ToSql};
 use tokio::sync::RwLock;
 
 static SETTINGS: OnceLock<RwLock<TodoConfig>> = OnceLock::new();
 
-#[derive(SurrealValue, Clone)]
+#[derive(SurrealValue, Clone, Default, Debug, PartialEq)]
 pub struct TodoConfig {
-    pub include_uwu: bool, // Testing with this bc I can't think of an actual config option
+    #[surreal(default)]
+    pub testing: bool,
 }
 
 async fn ensure_loaded(db: &Surreal<Db>) -> Result<(), crate::Error> {
@@ -34,6 +35,7 @@ pub async fn get_config(db: &Surreal<Db>) -> Result<TodoConfig, crate::Error> {
 }
 
 pub async fn update_config(db: &Surreal<Db>, new_cfg: TodoConfig) -> Result<(), crate::Error> {
+    dbg!(new_cfg.clone().into_value().to_sql());
     ensure_loaded(db).await?;
     set_component_config(COMPONENT_ID.to_string(), new_cfg.clone(), db).await?;
     let lock = SETTINGS.get().ok_or_else(|| {
