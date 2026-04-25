@@ -10,6 +10,8 @@ use surrealdb::engine::local::Db;
 use surrealdb::types::SurrealValue;
 use tokio::sync::RwLock;
 
+// TODO: Config macro
+// The current way of getting config to work with a cache is too complicated, this should be made into a macro.
 static SETTINGS: OnceLock<RwLock<TodoConfig>> = OnceLock::new();
 
 #[derive(SurrealValue, Clone, Default, Debug, PartialEq)]
