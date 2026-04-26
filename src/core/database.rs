@@ -1,7 +1,7 @@
 use crate::component::{Component, InitializerFuture};
-use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
 use surrealdb::types::{RecordId, SurrealValue};
+use surrealdb::Surreal;
 
 const COMPONENT_DATA_TABLE: &str = "component_data";
 
@@ -56,8 +56,6 @@ pub async fn set_component_config<T: SurrealValue>(
     Ok(())
 }
 
-// TODO(feat): component settings
-// Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/9
 #[derive(SurrealValue)]
 pub struct ComponentData {
     pub id: RecordId,
