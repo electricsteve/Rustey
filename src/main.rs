@@ -14,10 +14,6 @@ use surrealdb::Surreal;
 use crate::environment::Environment;
 pub use types::{Context, Error, ErrorType, GlobalData};
 
-// TODO: global config through env and/or config file
-// Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/8
-// Also relates to #4
-
 #[tokio::main]
 async fn main() {
     // Get environment
