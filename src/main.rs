@@ -16,11 +16,6 @@ pub use types::{Context, Error, ErrorType, GlobalData};
 
 #[tokio::main]
 async fn main() {
-    // Get environment
-    // TODO: remove dotenv dependency
-    // Probably get a dockerfile working
-    // Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/4
-    dotenv::dotenv().ok();
     let mut env = Environment::default();
     env.load_env();
     let token = env.token.clone().expect("Failed to get discord token");
