@@ -30,3 +30,7 @@
 /target
 LICENSE
 README.md
+
+.env.example
+prek.toml
+rustfmt.toml
