@@ -6,6 +6,7 @@ version = 4
 name = "RustDiscordBot"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "poise",
  "surrealdb",
  "tokio",

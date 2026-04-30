@@ -11,7 +11,7 @@ use constants::COMPONENT_ID;
 pub fn component() -> Box<Component> {
     Box::new(Component {
         id: COMPONENT_ID.to_string(),
-        commands: vec![],
+        commands: vec![commands::moderation],
         event_handler: Arc::new(Handler),
         initializer: None,
     })
