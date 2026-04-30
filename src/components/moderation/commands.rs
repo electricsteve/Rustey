@@ -35,11 +35,25 @@ async fn user(ctx: Context<'_>, user: User) -> Result<(), Error> {
         ErrorType::NotFound("No guild found to get guild specific details".to_string())
     })?;
     roles.sort();
+    roles.reverse(); // Sort roles in descending order so higher roles are shown first
+    let role_field = if roles.is_empty() {
+        "No roles".to_string()
+    } else {
+        roles.iter().map(|role| format!("- <@&{}>", role.id)).collect::<Vec<String>>().join("\n")
+    };
+
     let embed = CreateEmbed::default()
         .title(format!("{display_name}'s User Details"))
         .description(format!("Details about the Discord user {display_name}."))
         .timestamp(Timestamp::now())
-        .thumbnail(member.avatar_url().unwrap_or_else(|| user.avatar_url().unwrap_or_default()));
+        .thumbnail(member.avatar_url().unwrap_or_else(|| user.avatar_url().unwrap_or_default()))
+        .fields(vec![
+            ("Display name", display_name, true),
+            ("User Name", user_name, true),
+            ("Roles", role_field.as_str(), false),
+            ("Guild Join Date", &guild_join_date, true),
+            ("Discord Join Date", &discord_join_date, true),
+        ]);
     let embed = embed_add_details(ctx, embed);
     let attachment = get_bot_icon_attachment();
     let reply = CreateReply::default().embed(embed).attachment(attachment);
