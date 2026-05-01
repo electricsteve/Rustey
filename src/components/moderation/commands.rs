@@ -1,13 +1,20 @@
 use crate::utils::embeds::{embed_add_details, get_bot_icon_attachment};
 use crate::{Context, Error, ErrorType};
+use chrono::{Duration, Utc};
 use poise::CreateReply;
-use poise::serenity_prelude::{CreateEmbed, Timestamp, User};
+use poise::serenity_prelude::{CreateEmbed, Member, Timestamp, User};
 
-#[poise::command(prefix_command, slash_command, subcommands("user"), subcommand_required)]
+#[poise::command(
+    prefix_command,
+    slash_command,
+    subcommands("user", "timeout", "ban", "kick"),
+    subcommand_required
+)]
 pub async fn moderation(_: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+/// Get details about a user.
 #[poise::command(slash_command, prefix_command)]
 async fn user(ctx: Context<'_>, user: User) -> Result<(), Error> {
     // General info
@@ -58,5 +65,50 @@ async fn user(ctx: Context<'_>, user: User) -> Result<(), Error> {
     let attachment = get_bot_icon_attachment();
     let reply = CreateReply::default().embed(embed).attachment(attachment);
     ctx.send(reply).await?;
+    Ok(())
+}
+
+/// Timeout a user for the specified amount of time.
+#[poise::command(slash_command, prefix_command, required_permissions = "MODERATE_MEMBERS")] // MODERATE MEMBERS is "Time out members" in the app, refer to just above here: https://docs.discord.com/developers/topics/permissions#permission-hierarchy
+async fn timeout(
+    ctx: Context<'_>,
+    mut member: Member,
+    #[description = "Amount of seconds to time someone out for"]
+    #[max = 2419200]
+    // 28 days in seconds, which is the maximum timeout duration allowed by Discord
+    timeout: u64,
+) -> Result<(), Error> {
+    let mut date_time = Utc::now();
+    date_time += Duration::seconds(timeout as i64);
+    let result = member.disable_communication_until(ctx.as_ref(), date_time.into()).await;
+    if let Err(error) = result {
+        println!("Failed to timeout user: {:?}", error);
+        return Err(error.into());
+    }
+    ctx.say(format!("Successfully timed out {}", member.display_name())).await?;
+    Ok(())
+}
+
+/// Ban a user.
+#[poise::command(slash_command, prefix_command, required_permissions = "BAN_MEMBERS")]
+async fn ban(ctx: Context<'_>, member: Member) -> Result<(), Error> {
+    let result = member.ban(ctx.as_ref(), 0, None).await;
+    if let Err(error) = result {
+        println!("Failed to ban user: {:?}", error);
+        return Err(error.into());
+    }
+    ctx.say(format!("Successfully banned {}", member.display_name())).await?;
+    Ok(())
+}
+
+/// Kick a user
+#[poise::command(slash_command, prefix_command, required_permissions = "KICK_MEMBERS")]
+async fn kick(ctx: Context<'_>, member: Member) -> Result<(), Error> {
+    let result = member.kick(ctx.as_ref(), None).await;
+    if let Err(error) = result {
+        println!("Failed to kick user: {:?}", error);
+        return Err(error.into());
+    }
+    ctx.say(format!("Successfully kicked {}", member.display_name())).await?;
     Ok(())
 }
