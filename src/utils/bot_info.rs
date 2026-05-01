@@ -1,4 +1,5 @@
 // TODO: don't hardcode bot info
+// Issue URL: https://github.com/electricsteve/RustDiscordBot/issues/21
 
 pub fn get_name() -> String {
     "Rust Discord Bot".to_string()
