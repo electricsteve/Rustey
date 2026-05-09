@@ -13,7 +13,7 @@ use std::sync::Arc;
 pub fn component() -> Box<Component> {
     Box::new(Component {
         id: constants::COMPONENT_ID.to_string(),
-        commands: vec![todo, config::config],
+        commands: vec![todo],
         event_handler: Arc::new(Handler),
         initializer: Some(|data| Box::pin(initializer(data))),
     })
@@ -57,7 +57,7 @@ async fn list(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
-    subcommands("list", "add", "remove"),
+    subcommands("list", "add", "remove", "config::config"),
     subcommand_required
 )]
 pub async fn todo(_: Context<'_>) -> Result<(), Error> {

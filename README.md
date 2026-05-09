@@ -7,8 +7,8 @@ The main focus for this project is to make it an extendable, ALL-IN-ONE bot.
 
 I had time shortage, because of which I haven't been able to implement everything I want. This bot is meant to be a all-in-one bot, but I didn't have enough time and so it doesn't look like it.
 The bot currently has the following commands:
-- `/config` to configure the todo component (will be moved to `/todo`)
 - `/todo`
+  - `config` to configure the todo component
   - `add` add something to your todo list
   - `list` show your todo list
   - `remove` remove something from your todo list

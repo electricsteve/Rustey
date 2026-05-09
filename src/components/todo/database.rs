@@ -1,8 +1,8 @@
 use crate::components::todo::database::TodoError::{EmptyList, InvalidIndex};
+use surrealdb::Surreal;
 use surrealdb::engine::local::Db;
 use surrealdb::opt::PatchOp;
 use surrealdb::types::SurrealValue;
-use surrealdb::Surreal;
 
 pub async fn migrate(db: &Surreal<Db>) -> Result<(), crate::Error> {
     db.query(
